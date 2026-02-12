@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard – Intelligent Media Forensics</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</head>
+
+<body>
+
+{% if register_result %}
+    {% if register_result.status == "registered" %}
+        <div class="toast success visible" id="server-toast">
+            <i class="fas fa-check-circle"></i> 
+            <div>
+                <strong>Success</strong><br>
+                File successfully uploaded and registered.
+            </div>
+            <button class="close-toast" onclick="this.parentElement.remove()">×</button>
+        </div>
+    {% elif register_result.status == "duplicate" %}
+        <div class="toast warning visible" id="server-toast">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Duplicate</strong><br>
+                This file is already registered.
+            </div>
+            <button class="close-toast" onclick="this.parentElement.remove()">×</button>
+        </div>
+    {% else %}
+        <div class="toast error visible" id="server-toast">
+            <i class="fas fa-times-circle"></i>
+            <div>
+                <strong>Error</strong><br>
+                {{ register_result.message }}
+            </div>
+            <button class="close-toast" onclick="this.parentElement.remove()">×</button>
+        </div>
+    {% endif %}
+{% endif %}
+
+<div id="client-toast" class="toast hidden"></div>
+
+<header class="top-header">
+    <div>
+        <div class="title">Intelligent Media Forensics</div>
+        <div class="subtitle">Blockchain-secured SHA-256 Integrity Verification</div>
+    </div>
+    <div class="chain-status valid">
+        <i class="fas fa-link"></i> Chain Status: <b>Valid</b>
+    </div>
+</header>
+
+<section class="session-container">
+    <div class="card session-card">
+        <div>
+            <div class="session-label">Session</div>
+            <div class="session-user">Logged in as: <span class="highlight">{{ user }}</span></div>
+            <div class="session-hint">You now have access to the full dashboard below.</div>
+        </div>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</section>
+
+<nav class="tabs">
+    <button class="tab-btn active" onclick="openTab('register')">Register Media</button>
+    <button class="tab-btn" onclick="openTab('verify')">Verify Media</button>
+    <button class="tab-btn" onclick="openTab('blockchain'); loadBlockchain()">View Blockchain</button>
+</nav>
+
+<div id="tab-register" class="tab-content active">
+    <div class="container split">
+        <section class="card">
+            <h3>Register Original Media</h3>
+            <p class="muted">Upload an authentic image or video to store its SHA-256 fingerprint on the blockchain.</p>
+
+            <form action="/register" method="POST" enctype="multipart/form-data">
+                <label class="field-label">Select media file (image or video)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" name="media" accept=".jpg,.jpeg,.png,.mp4,.avi" required>
+                </div>
+
+                <label class="field-label" style="margin-top:15px">Reference ID (Unique)</label>
+                <input type="text" name="ref_id" placeholder="e.g. IMG_CASE001" required>
+
+                <p class="muted small" style="margin-top:10px">Note: Registration is only available when logged in.</p>
+
+                <button type="submit" class="primary">Register on Blockchain</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h3>Registration Result</h3>
+            
+            {% if register_result %}
+                {% if register_result.status == "registered" %}
+                    <div class="status-pill success" style="margin-bottom: 20px; display:inline-block;">
+                        Media successfully uploaded and registered on blockchain.
+                    </div>
+
+                    <div class="forensic-grid">
+                        <div class="data-box">
+                            <label>Status</label>
+                            <div class="data-value">registered</div>
+                        </div>
+                        <div class="data-box">
+                            <label>Media Type</label>
+                            <div class="data-value">{{ register_result.media_type }}</div>
+                        </div>
+                        
+                        <div class="data-box">
+                            <label>Original Filename</label>
+                            <div class="data-value">{{ register_result.filename }}</div>
+                        </div>
+                        <div class="data-box">
+                            <label>Stored Filename</label>
+                            <div class="data-value">{{ register_result.filename }}</div>
+                        </div>
+
+                        <div class="data-box">
+                            <label>Block Index</label>
+                            <div class="data-value">{{ register_result.block_index }}</div>
+                        </div>
+                        <div class="data-box" style="visibility: hidden;"></div>
+
+                        <div class="data-box full-width">
+                            <label>
+                                Fingerprint (SHA-256)
+                                <span class="copy-link" onclick="copyHashReg('{{ register_result.sha }}')">Copy full hash</span>
+                            </label>
+                            <div class="data-value mono">{{ register_result.sha }}</div>
+                        </div>
+                    </div>
+
+                    <p class="muted small" style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                        Block indexed at {{ register_result.block_index }} in the blockchain ledger.
+                    </p>
+
+                {% elif register_result.status == "duplicate" %}
+                     <div class="status-pill warning">⚠ Duplicate Entry</div>
+                     <p class="error-text" style="margin-top:10px">{{ register_result.message }}</p>
+                {% else %}
+                    <div class="status-pill error">⛔ Error</div>
+                    <p class="error-text" style="margin-top:10px">{{ register_result.message }}</p>
+                {% endif %}
+            
+            {% else %}
+                <p class="muted">No activity yet.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+
+<div id="tab-verify" class="tab-content hidden">
+    <div class="container split">
+        <section class="card">
+            <h3>Verify Media Integrity</h3>
+            <p class="muted">Upload any image or video. The system compares its SHA-256 hash against the blockchain.</p>
+
+            <form id="verify-form" onsubmit="handleVerify(event)">
+                <label class="field-label">Reference ID (Optional)</label>
+                <input type="text" id="verify-ref-id" placeholder="e.g. IMG001">
+                <p class="hint">If empty, the system will scan the entire blockchain.</p>
+
+                <label class="field-label">Select Media to Verify</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="verify-file" name="media" accept=".jpg,.jpeg,.png,.mp4,.avi" required>
+                </div>
+                
+                <button type="submit" class="primary" id="verify-btn">Verify Integrity</button>
+            </form>
+        </section>
+
+        <section class="card" id="verify-result-panel">
+            <div class="header-row">
+                <h3>Verification Result</h3>
+                <div id="verify-badge" class="status-pill hidden">AUTHENTIC</div>
+            </div>
+            
+            <div id="verify-placeholder">
+                <p class="muted center-text">Result will appear here.<br><span class="badge gray">WAITING FOR INPUT</span></p>
+            </div>
+
+            <div id="verify-loading" class="hidden">
+                <p class="muted center-text">Verifying cryptographic signature...</p>
+                <div class="loader"></div>
+            </div>
+
+            <div id="verify-content" class="hidden">
+                <div class="forensic-grid">
+                    <div class="data-box">
+                        <label>Incoming Filename</label>
+                        <div class="data-value" id="v-filename">-</div>
+                    </div>
+                    <div class="data-box">
+                        <label>Media Type</label>
+                        <div class="data-value" id="v-type">-</div>
+                    </div>
+                    <div class="data-box full-width">
+                        <label>Incoming Fingerprint <span class="copy-link" onclick="copyHash()">Copy full hash</span></label>
+                        <div class="data-value mono" id="v-sha">-</div>
+                    </div>
+                    <div class="data-box">
+                        <label>Matched Block Index</label>
+                        <div class="data-value" id="v-block-index">-</div>
+                    </div>
+                    <div class="data-box">
+                        <label>Matched ID</label>
+                        <div class="data-value" id="v-matched-id">-</div>
+                    </div>
+                     <div class="data-box">
+                        <label>Matched Filename</label>
+                        <div class="data-value" id="v-matched-filename">-</div>
+                    </div>
+                    
+                    <div class="data-box full-width">
+                        <label>Integrity Status</label>
+                        <div class="data-value bold" id="v-status-text">-</div>
+                    </div>
+                </div>
+
+                <div id="tamper-details" class="hidden warning-box">
+                    <p><strong>⚠️ Tampering Detected</strong></p>
+                    <p>Blocks Altered: <b id="v-percent">0%</b></p>
+                    
+                    <div id="analysis-actions" style="margin-top: 15px;">
+                        
+                        <button id="view-rec-btn" class="link-btn hidden" onclick="showReconstruction()">
+                            View Forensic Analysis →
+                        </button>
+
+                        <button id="gen-rec-btn" class="button primary small hidden" onclick="triggerVideoReconstruction()" style="width:100%; margin-top:5px;">
+                            <i class="fas fa-video"></i> Generate Reconstructed Video
+                        </button>
+
+                        <div id="gen-loading" class="hidden" style="text-align:center; margin-top:10px;">
+                            <div class="loader" style="width:20px; height:20px; border-width:2px; margin:0 auto 5px auto;"></div>
+                            <span class="muted small">Reconstructing... (This may take time)</span>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="notes-footer">
+                    <strong>Notes</strong>
+                    <p>If the file was edited, compressed, or altered in any way, the fingerprint will not match.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="tab-blockchain" class="tab-content hidden">
+    <div class="container">
+        <section class="card">
+            <div class="header-row">
+                <h3>Blockchain Ledger</h3>
+                <div class="actions" style="display:flex; gap:10px;">
+                    <button class="secondary small" onclick="loadBlockchain()" style="padding:8px 15px; font-size:12px; cursor:pointer;">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                    <button class="primary small" onclick="validateChain()" style="margin-top:0; width:auto; padding:8px 15px; font-size:12px;">
+                        <i class="fas fa-shield-alt"></i> Validate Chain
+                    </button>
+                </div>
+            </div>
+            
+            <p class="muted">Immutable record of all registered media assets.</p>
+
+            <div class="ledger-wrapper">
+                <table class="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>Index</th>
+                            <th>Timestamp</th>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Owner</th>
+                            <th>Fingerprint</th>
+                            <th>Prev Hash</th>
+                            <th>Block Hash</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="reconstructed-view" class="tab-content hidden">
+    <div class="container single-col">
+        <section class="card large-card">
+            <div class="header-row">
+                <h3>Reconstructed Media Analysis</h3>
+                <button class="secondary small" onclick="closeReconstruction()">← Back to Verification</button>
+            </div>
+            
+            <p class="muted">Recovered using block-level Merkle verification from original blockchain data.</p>
+            
+            <div class="reconstruction-container bg-darker p-4 rounded-lg text-center" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                
+                <div id="view-toggle-box" class="mb-4 flex justify-center gap-2 hidden"></div>
+
+                <div class="reconstruction-display" style="min-height: 200px; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                    <img id="rec-image" src="" class="hidden" style="max-width: 100%; border-radius: 4px;" />
+                    
+                    <div id="video-container" style="width: 100%;"></div>
+                </div>
+
+                <div class="actions" style="margin-top: 20px;">
+                    <a id="download-rec" href="#" download class="button primary hidden">⬇ Download Media</a>
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    function copyHashReg(hash) {
+        navigator.clipboard.writeText(hash).then(() => {
+            alert("Hash copied!");
+        });
+    }
+</script>
+
+</body>
+</html>
