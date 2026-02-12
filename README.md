@@ -213,8 +213,8 @@ Feel free to open issues or submit pull requests.
 
 ## Author
 
-GitHub: @Ragha8951  
-Email: ragha8951@gmail.com
+GitHub: @rithikashettigar  
+Email: rithikauj@gmail.com
 
 ---
 
