@@ -1,0 +1,45 @@
+{
+  "0": {
+    "index": 0,
+    "timestamp": "2026-02-05 10:14:57.900049",
+    "filename": "GENESIS",
+    "media_type": "none",
+    "owner": "system",
+    "fingerprint": "0000000000000000000000000000000000000000000000000000000000000000",
+    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "block_hash": "d849201979ca8f774b43c29239d41a09fa7de7d65e1c2818cb777c90ffe9aeb3"
+  },
+  "1": {
+    "index": 1,
+    "reference_id": "IMG001",
+    "media_type": "image",
+    "filename": "217fce55b9a64f09bf260bcf2a38978d_test.png",
+    "owner": "DEVANSH",
+    "fingerprint": "f567973b9195b2865ea227f9e4b0f8d704084a08c05ffa29fd63333ac53e673a",
+    "timestamp": "2026-02-05T10:14:57.900049",
+    "prev_hash": "d849201979ca8f774b43c29239d41a09fa7de7d65e1c2818cb777c90ffe9aeb3",
+    "block_hash": "dc0fa7fc9355e8d9df8f33dafaf99ba1f0ec6d246f21c1fe5f7adfafb3d94216"
+  },
+  "2": {
+    "index": 2,
+    "reference_id": "VDIO001",
+    "media_type": "video",
+    "filename": "222e2187f0a64b9ab7164da7ff0dab86_sample.mp4",
+    "owner": "DEVANSH",
+    "fingerprint": "75de37d41bd00d36011762a530a45343c560c5a278a6bfa13edf4ad8207fd672",
+    "timestamp": "2026-02-05T10:17:00.879115",
+    "prev_hash": "dc0fa7fc9355e8d9df8f33dafaf99ba1f0ec6d246f21c1fe5f7adfafb3d94216",
+    "block_hash": "b4bf53cf45740a2a71787e7c61247a6455fc83ee112c6a1b2d28864ff51ac864"
+  },
+  "3": {
+    "index": 3,
+    "reference_id": "IMG005",
+    "media_type": "image",
+    "filename": "c8ad094659384aa29480b395ec4c7849_Gemini_Generated_Image_axtbhbaxtbhbaxtb.png",
+    "owner": "Trishan",
+    "fingerprint": "2f79e95f84fcc4e1e9ff36b83be59e38f945eaf20954f21448e62c317b803f6d",
+    "timestamp": "2026-02-08T14:57:16.738311",
+    "prev_hash": "b4bf53cf45740a2a71787e7c61247a6455fc83ee112c6a1b2d28864ff51ac864",
+    "block_hash": "bc34ebf0c3c2a49f7bbfab168e80931396f46f18f7f92c6405d8f36e786b99e6"
+  }
+}

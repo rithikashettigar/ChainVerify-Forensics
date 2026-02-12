@@ -1,0 +1,20 @@
+[
+    {
+        "username": "Raghav",
+        "email": "ragha8951@gmail.com",
+        "timestamp": "2026-02-05T08:18:39.477714Z",
+        "event": "LOGIN_SUCCESS"
+    },
+    {
+        "username": "DEVANSH",
+        "email": "dd@gmail.com",
+        "timestamp": "2026-02-05T10:12:46.074375Z",
+        "event": "LOGIN_SUCCESS"
+    },
+    {
+        "username": "Trishan",
+        "email": "trish@gmail.com",
+        "timestamp": "2026-02-08T14:55:46.328082Z",
+        "event": "LOGIN_SUCCESS"
+    }
+]
